@@ -1,0 +1,1 @@
+define(["uiComponent","Magento_Checkout/js/model/shipping-rates-validator","Magento_Checkout/js/model/shipping-rates-validation-rules","Eloom_CorreiosFrete/js/model/shipping-rates-validator","Eloom_CorreiosFrete/js/model/shipping-rates-validation-rules"],function(a,b,c,d,e){b.registerValidator("eloom_correios",d);c.registerRules("eloom_correios",e);return a});

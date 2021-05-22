@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<carriers>
+			<eloom_correios>
+				<model>Eloom\CorreiosFrete\Model\Carrier</model>
+				<active>0</active>
+				<title>Correios</title>
+				<showmethod>1</showmethod>
+				<cd_servico>04510,04014</cd_servico>
+				<servico_gratuito>04510</servico_gratuito>
+				<servico_gratuito_desconto>0</servico_gratuito_desconto>
+				<cd_formato>1</cd_formato>
+				<tp_vl_peso>kg</tp_vl_peso>
+				<vl_valor_declarado>0</vl_valor_declarado>
+				<cd_mao_propria>0</cd_mao_propria>
+				<cd_aviso_recebimento>0</cd_aviso_recebimento>
+				<default_height>2</default_height>
+				<default_length>16</default_length>
+				<default_width>11</default_width>
+				<prazo_entrega>1</prazo_entrega>
+				<taxa_extra>0</taxa_extra>
+				<taxa_extra_valor>0</taxa_extra_valor>
+				<prazo_extra>0</prazo_extra>
+				<mensagem_prazo_entrega><![CDATA[%s - Até %d dia(s) úteis]]></mensagem_prazo_entrega>
+				<volume_weight_min>5</volume_weight_min>
+				<sort_order>15</sort_order>
+			</eloom_correios>
+		</carriers>
+	</default>
+</config>
