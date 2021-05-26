@@ -1,4 +1,4 @@
-# Cálculo de Frete e Rastreamento de Objetos com Correios para Magento 2
+# Cálculo de Frete e Rastreamento de Objetos com Correios (Magento 2)
 
 ## Links
 
