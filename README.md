@@ -1,5 +1,9 @@
 # Cálculo de Frete e Rastreamento de Objetos com Correios (Magento 2)
 
+## Require
+* PHP/PHP-FPM: ~7.2 | ~7.3 | ~7.4
+* Magento/framework: 102.0.* | 103.0.*
+
 ## Links
 
 * [Web site](https://www.eloom.com.br/correios-frete)
