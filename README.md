@@ -1,4 +1,4 @@
-# Cálculo de Frete e Rastreamento de Objetos com Correios (Magento 2)
+# Cálculo de Frete e Rastreamento de Objetos com Correios para Magento 2
 
 ## Require
 * PHP/PHP-FPM: ~7.2 | ~7.3 | ~7.4
