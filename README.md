@@ -48,7 +48,7 @@ Para mais informações sobre o SRO dos Correios, consulte este [link](https://w
 
 ## Guia de instalação
 
-Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo)
+Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo) dos Correios no Magento 2.
 
 ## Links
 
