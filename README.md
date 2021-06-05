@@ -48,7 +48,7 @@ Para mais informações sobre o SRO dos Correios, consulte este [link](https://w
 
 ## Guia de instalação
 
-[Instalando o módulo dos Correios Frete / SRO](https://docs.eloom.com.br/pt/correios#instalando-o-modulo)
+Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo)
 
 ## Links
 
