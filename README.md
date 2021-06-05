@@ -50,10 +50,14 @@ Para mais informações sobre o SRO dos Correios, consulte este [link](https://w
 
 Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo) dos Correios Frete / Correios SRO no Magento 2.
 
+## Sugestões
+
+Melhore a usabilidade da sua loja virtual com nosso [Módulo de máscaras BR](https://github.com/eloom/module-mask-br).
+
 ## Links
 
 * [Web site](https://www.eloom.com.br/correios-frete)
 * [Documentação](https://docs.eloom.com.br/correios-frete)
 * [Issue tracker](https://github.com/eloom/module-correios-frete/issues)
-* [Composer](https://app.repman.io/organization/eloom-open/package/81520e5c-adab-4769-8430-f6fb167e41bd/details#)
+* [Composer](https://app.repman.io/organization/eloom-open/package/81520e5c-adab-4769-8430-f6fb167e41bd/details)
 * [Código fonte](https://github.com/eloom/module-correios-frete)
