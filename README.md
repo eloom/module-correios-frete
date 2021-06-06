@@ -23,16 +23,16 @@ Acesse a página do projeto [Correios Frete para Magento 2](https://www.eloom.co
 - [x] Serviço de aviso de recebimento;
 - [x] Mostrar método se não aplicável;
 - [x] Serviços:
-    - 03085 - PAC com contrato;
-    - 04510 - PAC sem contrato;
-    - 04669 - PAC com contrato;
-    - 03050 - SEDEX com contrato;
-    - 04014 - SEDEX sem contrato;
-    - 04162 - SEDEX com contrato;
-    - 40045 - SEDEX a Cobrar, sem contrato;
-    - 40126 - SEDEX a Cobrar, com contrato;
-    - 40215 - SEDEX 10, sem contrato;
-    - 40290 - SEDEX Hoje, sem contrato;
+    - [x] 03085 - PAC com contrato;
+    - [x] 04510 - PAC sem contrato;
+    - [x] 04669 - PAC com contrato;
+    - [x] 03050 - SEDEX com contrato;
+    - [x] 04014 - SEDEX sem contrato;
+    - [x] 04162 - SEDEX com contrato;
+    - [x] 40045 - SEDEX a Cobrar, sem contrato;
+    - [x] 40126 - SEDEX a Cobrar, com contrato;
+    - [x] 40215 - SEDEX 10, sem contrato;
+    - [x] 40290 - SEDEX Hoje, sem contrato;
 - [x] Serviço com entrega gratuita;
 - [x] Valor máximo p/ frete grátis;
 - [x] Medidas;
@@ -49,10 +49,6 @@ Para mais informações sobre o SRO dos Correios, consulte este [link](https://w
 ## Guia de instalação
 
 Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo) dos Correios Frete / Correios SRO no Magento 2.
-
-## Sugestões
-
-Melhore a usabilidade da sua loja virtual com nosso [Módulo de máscaras BR](https://github.com/eloom/module-mask-br).
 
 ## Links
 
