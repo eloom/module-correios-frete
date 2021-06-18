@@ -6,7 +6,7 @@ O módulo Correios para o Magento 2 é de código aberto e está disponível no 
 
 ## Projeto Correios Frete
 
-Acesse a página do projeto [Correios Frete para Magento 2](https://www.eloom.com.br/correios) e tenha uma visão completa de todos os recursos que nossa integração oferece.
+Acesse a página do projeto [Correios Frete para Magento 2](https://eloom.tech/correios) e tenha uma visão completa de todos os recursos que nossa integração oferece.
 
 ## Requisitos Técnicos
 
@@ -48,12 +48,12 @@ Para mais informações sobre o SRO dos Correios, consulte este [link](https://w
 
 ## Guia de instalação
 
-Consulte a seção [Instalando o módulo](https://docs.eloom.com.br/pt/correios#instalando-o-modulo) dos Correios Frete / Correios SRO no Magento 2.
+Consulte a seção [Instalando o módulo](https://docs.eloom.tech/pt/correios#instalando-o-modulo) dos Correios Frete / Correios SRO no Magento 2.
 
 ## Links
 
-* [Web site](https://www.eloom.com.br/correios-frete)
-* [Documentação](https://docs.eloom.com.br/correios-frete)
+* [Web site](https://eloom.tech/correios-frete)
+* [Documentação](https://docs.eloom.tech/correios-frete)
 * [Issue tracker](https://github.com/eloom/module-correios-frete/issues)
 * [Composer](https://app.repman.io/organization/eloom/package/81520e5c-adab-4769-8430-f6fb167e41bd/details)
 * [Código fonte](https://github.com/eloom/module-correios-frete)
