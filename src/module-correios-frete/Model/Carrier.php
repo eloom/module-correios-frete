@@ -156,9 +156,6 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 					$product = $objectManager->create(Product::class)->load($item->getProductId());
 					if ($product->getTypeId() == 'simple') {
 						$price += (float)(!is_null($product->getData('special_price')) ? $product->getData('special_price') : $product->getData('price'));
-					}
-					
-					if ($product->getTypeId() == 'simple') {
 						$weight += (float)$product->getData('weight');
 					}
 				}
