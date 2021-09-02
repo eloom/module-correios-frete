@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Eloom\CorreiosFrete\Setup;
 
-use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -29,7 +28,8 @@ class InstallData implements InstallDataInterface {
 		$this->eavSetupFactory = $eavSetupFactory;
 	}
 
-	public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) {
+	public function install(ModuleDataSetupInterface $setup,
+	                        ModuleContextInterface $context) {
 		$eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
 		if (!$eavSetup->getAttributeId(\Magento\Catalog\Model\Product::ENTITY, 'volume_altura')) {

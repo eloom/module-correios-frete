@@ -55,5 +55,6 @@ Consulte a seção [Instalando o módulo](https://docs.eloom.tech/pt/correios#in
 * [Web site](https://eloom.tech/correios-frete)
 * [Documentação](https://docs.eloom.tech/correios-frete)
 * [Issue tracker](https://github.com/eloom/module-correios-frete/issues)
-* [Composer](https://app.repman.io/organization/eloom/package/81520e5c-adab-4769-8430-f6fb167e41bd/details)
+* [Packagist](https://packagist.org/packages/eloom/module-correios-frete)
+* [Repman](https://app.repman.io/organization/eloom/package/81520e5c-adab-4769-8430-f6fb167e41bd/details)
 * [Código fonte](https://github.com/eloom/module-correios-frete)
