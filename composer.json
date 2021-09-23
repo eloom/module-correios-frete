@@ -1,6 +1,6 @@
 {
   "name": "eloom/module-correios-frete",
-  "description": "Frete com Correios para Magento 2",
+  "description": "Frete com Correios para Magento",
   "homepage": "https://eloom.tech/correios",
   "keywords": [
     "magento",
@@ -18,6 +18,8 @@
   "support": {
     "email": "suporte@eloom.com.br"
   },
+  "minimum-stability": "dev",
+  "prefer-stable" : true,
   "require": {
     "php": "~7.2|~7.3|~7.4",
     "magento/framework": "102.0.*|103.0.*"
