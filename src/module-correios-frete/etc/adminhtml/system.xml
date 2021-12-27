@@ -1,140 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-	<system>
-		<section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
-			<group id="eloom_correios" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
-				<label>Correios - Frete</label>
-				<field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Enabled</label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="title" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Title</label>
-				</field>
-				<field id="cd_formato" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Formato da encomenda]]></label>
-					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\FormatoEmbalagem</source_model>
-				</field>
-				<field id="vl_valor_declarado" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Serviço de valor declarado]]></label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="cd_mao_propria" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Serviço de mão própria]]></label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="cd_aviso_recebimento" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Serviço de aviso de recebimento]]></label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="showmethod" translate="label" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Show Method if Not Applicable</label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-					<frontend_class>shipping-skip-hide</frontend_class>
-				</field>
-				<field id="sort_order" translate="label" type="text" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Sort Order</label>
-				</field>
+    <system>
+        <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="eloom_correios" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Correios - Frete</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Title</label>
+                </field>
+                <field id="cd_formato" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Formato da encomenda]]></label>
+                    <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\FormatoEmbalagem</source_model>
+                </field>
+                <field id="vl_valor_declarado" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Serviço de valor declarado]]></label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cd_mao_propria" translate="label" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Serviço de mão própria]]></label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cd_aviso_recebimento" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Serviço de aviso de recebimento]]></label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Method if Not Applicable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                </field>
 
-				<field id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Account information</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="cd_empresa" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Código ECT</label>
-				</field>
-				<field id="ds_senha" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Senha ECT</label>
-				</field>
+                <field id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Account information</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="cd_empresa" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Código ECT</label>
+                </field>
+                <field id="ds_senha" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Senha ECT</label>
+                </field>
 
-				<field id="servicos" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Services</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="cd_servico" translate="label" type="multiselect" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Serviços]]></label>
-					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Servicos</source_model>
-				</field>
-				<field id="servico_gratuito" translate="label" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Serviço com entrega gratuita]]></label>
-					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Servicos</source_model>
-				</field>
-				<field id="servico_gratuito_desconto" translate="label" type="text" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Valor máximo p/ frete grátis]]></label>
-					<validate>required-entry validate-currency-dollar</validate>
-				</field>
+                <field id="servicos" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Services</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="cd_servico" translate="label" type="multiselect" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Serviços]]></label>
+                    <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Servicos</source_model>
+                </field>
+                <field id="servico_gratuito" translate="label" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Serviço com entrega gratuita]]></label>
+                    <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Servicos</source_model>
+                </field>
+                <field id="servico_gratuito_desconto" translate="label" type="text" sortOrder="33" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Valor máximo p/ frete grátis]]></label>
+                    <validate>required-entry validate-currency-dollar</validate>
+                </field>
 
-				<field id="dimensoes" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Medidas</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="default_height" translate="label" type="text" sortOrder="41" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label><![CDATA[Altura padrão (cm)]]></label>
-					<validate>required-entry validate-digits</validate>
-				</field>
-				<field id="default_width" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label><![CDATA[Largura padrão (cm)]]></label>
-					<validate>required-entry validate-digits</validate>
-				</field>
-				<field id="default_length" translate="label" type="text" sortOrder="43" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label><![CDATA[Comprimento padrão (cm)]]></label>
-					<validate>required-entry validate-digits</validate>
-				</field>
-				<field id="tp_vl_peso" translate="label" type="select" sortOrder="44" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Peso da encomenda]]></label>
-					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\PesoEncomenda</source_model>
-				</field>
+                <field id="dimensoes" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Medidas</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="default_height" translate="label" type="text" sortOrder="41" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[Altura padrão (cm)]]></label>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+                <field id="default_width" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[Largura padrão (cm)]]></label>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+                <field id="default_length" translate="label" type="text" sortOrder="43" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[Comprimento padrão (cm)]]></label>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+                <field id="tp_vl_peso" translate="label" type="select" sortOrder="44" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Peso da encomenda]]></label>
+                    <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\PesoEncomenda</source_model>
+                </field>
 
-				<field id="prazos" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Prazos</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="prazo_entrega" translate="label" type="select" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label><![CDATA[Exibir prazo de entrega]]></label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="mensagem_prazo_entrega" translate="label" type="text" sortOrder="52" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Mensagem do prazo de entrega</label>
-				</field>
-				<field id="prazo_extra" translate="label" type="text" sortOrder="53" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Prazo extra</label>
-					<validate>required-entry validate-digits</validate>
-				</field>
+                <field id="prazos" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Prazos</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="prazo_entrega" translate="label" type="select" sortOrder="51" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label><![CDATA[Exibir prazo de entrega]]></label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="mensagem_prazo_entrega" translate="label" type="text" sortOrder="52" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Mensagem do prazo de entrega</label>
+                </field>
+                <field id="prazo_extra" translate="label" type="text" sortOrder="53" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Prazo extra</label>
+                    <validate>required-entry validate-digits</validate>
+                </field>
 
-				<field id="taxas" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Taxas</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="taxa_extra" translate="label" type="select" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Taxa Extra</label>
-					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\TaxaExtra</source_model>
-				</field>
-				<field id="taxa_extra_valor" translate="label" type="text" sortOrder="62" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Valor/Percentual da Taxa Extra</label>
-					<validate>required-entry validate-digits</validate>
-				</field>
+                <field id="taxas" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Taxas</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="taxa_extra" translate="label" type="select" sortOrder="61" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Taxa Extra</label>
+                    <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\TaxaExtra</source_model>
+                </field>
+                <field id="taxa_extra_valor" translate="label" type="text" sortOrder="62" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Valor/Percentual da Taxa Extra</label>
+                    <validate>required-entry validate-digits</validate>
+                </field>
 
-				<field id="sro" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label>Sistema de Rastreamento de Objetos</label>
-					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-				</field>
-				<field id="sro_active" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Enabled</label>
-					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-				</field>
-				<field id="sro_user" translate="label" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label><![CDATA[Usuário]]></label>
-					<depends>
-						<field id="sro_active">1</field>
-					</depends>
-				</field>
-				<field id="sro_password" translate="label" type="text" sortOrder="73" showInDefault="1" showInWebsite="1" showInStore="0">
-					<label><![CDATA[Senha]]></label>
-					<depends>
-						<field id="sro_active">1</field>
-					</depends>
-				</field>
-			</group>
-		</section>
-	</system>
+                <field id="sro" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Sistema de Rastreamento de Objetos</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="sro_active" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sro_user" translate="label" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[Usuário]]></label>
+                    <depends>
+                        <field id="sro_active">1</field>
+                    </depends>
+                </field>
+                <field id="sro_password" translate="label" type="text" sortOrder="73" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[Senha]]></label>
+                    <depends>
+                        <field id="sro_active">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
 </config>

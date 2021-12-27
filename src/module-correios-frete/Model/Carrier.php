@@ -1,12 +1,12 @@
 <?php
 /**
 * 
-* Frete com Correios para Magento 2
+* Frete com Correios para Magento
 * 
-* @category     Ã©lOOm
+* @category     elOOm
 * @package      Modulo Frete com Correios
-* @copyright    Copyright (c) 2021 Ã©lOOm (https://eloom.tech)
-* @version      1.0.0
+* @copyright    Copyright (c) 2021 elOOm (https://eloom.tech)
+* @version      1.0.1
 * @license      https://opensource.org/licenses/OSL-3.0
 * @license      https://opensource.org/licenses/AFL-3.0
 *
@@ -76,7 +76,15 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	
 	protected $freeMethodSameCEP = null;
 	
-	protected $reverse = ['3050' => '03050', '3085' => '03085', '4510' => '04510', '4669' => '04669', '4014' => '04014', '4162' => '04162'];
+	protected $reverse = [
+		'3050' => '03050',
+		'3085' => '03085',
+		'3220' => '03220',
+		'3298' => '03298',
+		'4510' => '04510',
+		'4669' => '04669',
+		'4014' => '04014',
+		'4162' => '04162'];
 	
 	protected $correiosServiceList = [];
 	
@@ -206,9 +214,11 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		static $codes = [
 			'service' => [
 				'03085' => '03085 - PAC com contrato',
+				'03298' => '03298 - PAC com contrato',
 				'04510' => '04510 - PAC sem contrato',
 				'04669' => '04669 - PAC com contrato',
 				'03050' => '03050 - SEDEX com contrato',
+				'03220' => '03220 - SEDEX com contrato',
 				'04014' => '04014 - SEDEX sem contrato',
 				'04162' => '04162 - SEDEX com contrato',
 				'40045' => '40045 - SEDEX a Cobrar, sem contrato',
@@ -218,9 +228,11 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			],
 			'front' => [
 				'03085' => 'PAC',
+				'03298' => 'PAC',
 				'04510' => 'PAC',
 				'04669' => 'PAC',
 				'03050' => 'SEDEX',
+				'03220' => 'SEDEX',
 				'04014' => 'SEDEX',
 				'04162' => 'SEDEX',
 				'40045' => 'SEDEX a Cobrar',
