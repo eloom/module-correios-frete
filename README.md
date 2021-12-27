@@ -1,4 +1,4 @@
-# Cálculo de Frete e Rastreamento de Objetos com Correios para Magento 2
+# Cálculo de Frete e Rastreamento de Objetos com Correios para Magento
 
 O módulo Correios para o Magento 2 é de código aberto e está disponível no [GitHub](https://github.com/eloom/module-correios-frete). O repositório [GitHub](https://github.com/eloom/module-correios-frete) está conectado ao [Repman](https://app.repman.io/organization/eloom/package/81520e5c-adab-4769-8430-f6fb167e41bd/details) para que você possa incluí-lo facilmente em seu projeto através do [Composer](https://getcomposer.org/).
 
@@ -24,9 +24,11 @@ Acesse a página do projeto [Correios Frete para Magento 2](https://eloom.tech/c
 - [x] Mostrar método se não aplicável;
 - [x] Serviços:
     - [x] 03085 - PAC com contrato;
+    - [x] 03298 - PAC com contrato;
     - [x] 04510 - PAC sem contrato;
     - [x] 04669 - PAC com contrato;
     - [x] 03050 - SEDEX com contrato;
+    - [x] 03220 - SEDEX com contrato;
     - [x] 04014 - SEDEX sem contrato;
     - [x] 04162 - SEDEX com contrato;
     - [x] 40045 - SEDEX a Cobrar, sem contrato;
