@@ -78,9 +78,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 								\Magento\Directory\Model\CurrencyFactory $currencyFactory,
 								\Magento\Directory\Helper\Data $directoryData,
 								\Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
-	                            array $data = [],
-	                            \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
-	                            \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory) {
+	                            array $data = []) {
 		
 		parent::__construct($scopeConfig,
 							$rateErrorFactory,
