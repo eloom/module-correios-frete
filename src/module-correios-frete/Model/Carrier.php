@@ -492,4 +492,16 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		
 		return $detail;
 	}
+
+	/**
+     * Do shipment request to carrier web service, obtain Print Shipping Labels and process errors in response
+     *
+     * @param \Magento\Framework\DataObject $request
+     * @return \Magento\Framework\DataObject
+     */
+    protected function _doShipmentRequest(\Magento\Framework\DataObject $request) {
+		$result = new \Magento\Framework\DataObject();
+		
+		return $result;
+	}
 }
