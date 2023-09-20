@@ -22,8 +22,9 @@
   "minimum-stability": "dev",
   "prefer-stable" : true,
   "require": {
-    "php": "~7.2|~7.3|~7.4",
-    "magento/framework": "102.0.*|103.0.*"
+    "php": "~7.2|~7.3|~7.4|~8.1|~8.2",
+    "magento/framework": "102.0.*|103.0.*|104.0.*",
+    "eloom/sdk-correios-php": "dev-main"
   },
   "license": [
     "OSL-3.0",

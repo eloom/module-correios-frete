@@ -4,17 +4,47 @@
         <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
             <group id="eloom_correios" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Correios - Frete</label>
-                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="title" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Title</label>
                 </field>
-                <field id="cd_formato" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+
+                <field id="account" translate="label" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Account information</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="usuario" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Usuário</label>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="codigo_acesso" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Código de Acesso</label>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="cartao_postagem" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cartão de Postagem</label>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+
+                <field id="configurations" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Configurations</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="cd_formato" translate="label" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label><![CDATA[Formato da encomenda]]></label>
                     <source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\FormatoEmbalagem</source_model>
                 </field>
+
+                <!--
                 <field id="vl_valor_declarado" translate="label" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label><![CDATA[Serviço de valor declarado]]></label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -27,26 +57,8 @@
                     <label><![CDATA[Serviço de aviso de recebimento]]></label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="showmethod" translate="label" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Show Method if Not Applicable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <frontend_class>shipping-skip-hide</frontend_class>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Sort Order</label>
-                </field>
-
-                <field id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Account information</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="cd_empresa" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Código ECT</label>
-                </field>
-                <field id="ds_senha" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Senha ECT</label>
-                </field>
-
+                -->
+                
                 <field id="servicos" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Services</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
@@ -114,25 +126,13 @@
                     <validate>required-entry validate-digits</validate>
                 </field>
 
-                <field id="sro" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Sistema de Rastreamento de Objetos</label>
-                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                </field>
-                <field id="sro_active" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enabled</label>
+                <field id="showmethod" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Method if Not Applicable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
                 </field>
-                <field id="sro_user" translate="label" type="text" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label><![CDATA[Usuário]]></label>
-                    <depends>
-                        <field id="sro_active">1</field>
-                    </depends>
-                </field>
-                <field id="sro_password" translate="label" type="text" sortOrder="73" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label><![CDATA[Senha]]></label>
-                    <depends>
-                        <field id="sro_active">1</field>
-                    </depends>
+                <field id="sort_order" translate="label" type="text" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
                 </field>
             </group>
         </section>

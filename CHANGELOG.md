@@ -1,3 +1,9 @@
+# 2.0.0
+## 20/09/2023
+
+1. [](#new)
+   * Mudança da API SOAP para API Rest
+
 # 1.0.1
 ## 27/12/2021
 

@@ -5,8 +5,8 @@
 * 
 * @category     elOOm
 * @package      Modulo Frete com Correios
-* @copyright    Copyright (c) 2021 elOOm (https://eloom.tech)
-* @version      1.0.1
+* @copyright    Copyright (c) 2023 elOOm (https://eloom.tech)
+* @version      2.0.0
 * @license      https://opensource.org/licenses/OSL-3.0
 * @license      https://opensource.org/licenses/AFL-3.0
 *
@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 namespace Eloom\CorreiosFrete\Model;
 
-use Eloom\CorreiosFrete\Lib\CalcPrecoPrazo\CalcPrecoPrazo;
-use Eloom\CorreiosFrete\Lib\CalcPrecoPrazo\CalcPrecoPrazoWS;
-use Eloom\CorreiosFrete\Lib\CalcPrecoPrazo\Errors;
-use Eloom\CorreiosFrete\Lib\Sro\BuscaEventos;
-use Eloom\CorreiosFrete\Lib\Sro\Rastro;
+use Eloom\Correios\Client;
+use Eloom\Correios\Errors;
+use Eloom\Correios\Endpoints\Rastro;
+use Eloom\Correios\Exceptions\UnauthorizedException;
+
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -28,16 +28,13 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
-use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
-use Magento\Shipping\Model\Tracking\Result\StatusFactory;
 use Psr\Log\LoggerInterface;
 
 class Carrier extends AbstractCarrier implements CarrierInterface {
 	
 	const CODE = 'eloom_correios';
 	const COUNTRY = 'BR';
-	const CODE_SAME_CEP = '-888';
 	
 	protected $_code = self::CODE;
 	protected $_freeMethod = null;
@@ -70,21 +67,9 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	
 	private $freeMethodWeight;
 	
-	private $hasErrorSameCEP = false;
-	
 	private $skipErrors = ['010', '011'];
 	
 	protected $freeMethodSameCEP = null;
-	
-	protected $reverse = [
-		'3050' => '03050',
-		'3085' => '03085',
-		'3220' => '03220',
-		'3298' => '03298',
-		'4510' => '04510',
-		'4669' => '04669',
-		'4014' => '04014',
-		'4162' => '04162'];
 	
 	protected $correiosServiceList = [];
 	
@@ -215,30 +200,20 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			'service' => [
 				'03085' => '03085 - PAC com contrato',
 				'03298' => '03298 - PAC com contrato',
-				'04510' => '04510 - PAC sem contrato',
 				'04669' => '04669 - PAC com contrato',
 				'03050' => '03050 - SEDEX com contrato',
 				'03220' => '03220 - SEDEX com contrato',
-				'04014' => '04014 - SEDEX sem contrato',
 				'04162' => '04162 - SEDEX com contrato',
-				'40045' => '40045 - SEDEX a Cobrar, sem contrato',
-				'40126' => '40126 - SEDEX a Cobrar, com contrato',
-				'40215' => '40215 - SEDEX 10, sem contrato',
-				'40290' => '40290 - SEDEX Hoje, sem contrato'
+				'40126' => '40126 - SEDEX a Cobrar, com contrato'
 			],
 			'front' => [
 				'03085' => 'PAC',
 				'03298' => 'PAC',
-				'04510' => 'PAC',
 				'04669' => 'PAC',
 				'03050' => 'SEDEX',
 				'03220' => 'SEDEX',
-				'04014' => 'SEDEX',
 				'04162' => 'SEDEX',
-				'40045' => 'SEDEX a Cobrar',
-				'40126' => 'SEDEX a Cobrar',
-				'40215' => 'SEDEX 10',
-				'40290' => 'SEDEX Hoje'
+				'40126' => 'SEDEX a Cobrar'
 			]
 		];
 		
@@ -267,7 +242,6 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			
 			return $this->_result;
 		}
-		$this->checkErrorSameCep();
 		
 		foreach ($this->correiosServiceList as $s) {
 			$this->appendService($s);
@@ -276,39 +250,18 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		return $this->_result;
 	}
 	
-	private function checkErrorSameCep() {
-		foreach ($this->correiosServiceList as $servico) {
-			if ($servico->Erro == self::CODE_SAME_CEP) {
-				$this->hasErrorSameCEP = true;
-			}
-		}
-		
-		if ($this->hasErrorSameCEP) {
-			$cheapValue = null;
-			foreach ($this->correiosServiceList as $servico) {
-				if ($servico->Erro == '0') {
-					$v = floatval(str_replace(',', '.', (string)$servico->Valor));
-					if ($cheapValue == null || $v < $cheapValue) {
-						$cheapValue = $v;
-						$this->freeMethodSameCEP = $this->checkReverse($servico->Codigo);
-					}
-				}
-			}
-		}
-	}
-	
 	private function appendService($servico) {
 		$rate = null;
-		$method = $this->checkReverse($servico->Codigo);
+		$method = $servico->coProduto;
 		
-		if ($servico->Erro != '0' && !in_array($servico->Erro, $this->skipErrors)) {
+		if ($servico->txErro != '0' && !in_array($servico->txErro, $this->skipErrors)) {
 			if ($this->getConfigData('showmethod')) {
 				$title = $this->getCode('front', $method);
 				
 				$rate = $this->rateErrorFactory->create();
 				$rate->setCarrier($this->_code);
 				$rate->setCarrierTitle($this->getConfigData('title'));
-				$rate->setErrorMessage(($title != '' ? $title . ' - ' . $servico->MsgErro : $servico->MsgErro));
+				$rate->setErrorMessage(($title != '' ? $title . ' - ' . $servico->txErro : $servico->txErro));
 			}
 		} else {
 			$rate = $this->rateMethodFactory->create();
@@ -319,18 +272,18 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			$title = $this->getCode('front', $method);
 			if ($this->getConfigData('prazo_entrega')) {
 				$s = $this->getConfigData('mensagem_prazo_entrega');
-				$title = sprintf($s, $title, intval($servico->PrazoEntrega + $this->getConfigData('prazo_extra')));
+				$title = sprintf($s, $title, intval($servico->prazoEntrega + $this->getConfigData('prazo_extra')));
 			}
-			if ($servico->obsFim != '') {
-				$title = $title . ' [' . $servico->obsFim . ']';
+			if ($servico->msgPrazo != '') {
+				$title = $title . ' [' . $servico->msgPrazo . ']';
 			}
 			$title = substr($title, 0, 255);
 			$rate->setMethodTitle($title);
 			
 			$taxaExtra = $this->getConfigData('taxa_extra');
 			if ($taxaExtra) {
-				$v1 = floatval(str_replace(',', '.', (string)$this->getConfigData('taxa_extra_valor')));
-				$v2 = floatval(str_replace(',', '.', (string)$servico->Valor));
+				$v1 = floatval(str_replace(',', '.', (string) $this->getConfigData('taxa_extra_valor')));
+				$v2 = floatval(str_replace(',', '.', (string) $servico->pcFinal));
 				
 				if ($taxaExtra == '2') {
 					$rate->setPrice($v1 + $v2);
@@ -338,7 +291,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 					$rate->setPrice($v2 + (($v1 * $v2) / 100));
 				}
 			} else {
-				$rate->setPrice(floatval(str_replace(',', '.', (string)$servico->Valor)));
+				$rate->setPrice(floatval(str_replace(',', '.', (string) $servico->pcFinal)));
 			}
 			
 			if ($this->hasFreeMethod) {
@@ -362,93 +315,92 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	}
 	
 	private function calcPrecoPrazo() {
-		$calcPrecoPrazo = new CalcPrecoPrazo();
-		$calcPrecoPrazo->sCepOrigem = $this->fromZip;
-		$calcPrecoPrazo->sCepDestino = $this->toZip;
-		
-		if ($this->volumeWeight > $this->getConfigData('volume_weight_min') && $this->volumeWeight > $this->packageWeight) {
-			$calcPrecoPrazo->nVlPeso = $this->volumeWeight;
-		} else {
-			$calcPrecoPrazo->nVlPeso = $this->packageWeight;
-		}
-		if ($this->getConfigData('vl_valor_declarado')) {
-			$calcPrecoPrazo->nVlValorDeclarado = $this->packageValue;
-		} else {
-			$calcPrecoPrazo->nVlValorDeclarado = 0;
-		}
-		$calcPrecoPrazo->nVlComprimento = $this->nVlComprimento;
-		$calcPrecoPrazo->nVlAltura = $this->nVlAltura;
-		$calcPrecoPrazo->nVlLargura = $this->nVlLargura;
-		$calcPrecoPrazo->nVlDiametro = 0;
-		
-		$calcPrecoPrazo->nCdEmpresa = (null == $this->getConfigData('cd_empresa') ? '' : trim($this->getConfigData('cd_empresa')));
-		$calcPrecoPrazo->sDsSenha = (null == $this->getConfigData('ds_senha') ? '' : trim($this->getConfigData('ds_senha')));
-		$calcPrecoPrazo->nCdFormato = $this->getConfigData('cd_formato');
-		
-		if ($this->getConfigData('cd_aviso_recebimento')) {
-			$calcPrecoPrazo->sCdAvisoRecebimento = 'S';
-		} else {
-			$calcPrecoPrazo->sCdAvisoRecebimento = 'N';
-		}
-		if ($this->getConfigData('cd_mao_propria')) {
-			$calcPrecoPrazo->sCdMaoPropria = 'S';
-		} else {
-			$calcPrecoPrazo->sCdMaoPropria = 'N';
-		}
-		
+		/**
+		 * Autentica
+		 */
+		$client = new Client($this->getConfigData('usuario'), $this->getConfigData('codigo_acesso'));
 		try {
-			$calculaFreteResponse = null;
-			$calcPrecoPrazoWS = new CalcPrecoPrazoWS();
-			$calcPrecoPrazoWS->__setLocation('http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx');
+			$client->autentica()->cartaoPostagem($this->getConfigData('cartao_postagem'));
+		} catch (UnauthorizedException $exception) {
+			$this->logger->critical($exception->getMessage());
+
+			$rate = $this->rateErrorFactory->create();
+			$rate->setCarrier($this->_code);
+			$rate->setCarrierTitle($this->getConfigData('title'));
+			$rate->setErrorMessage(Errors::getMessage('401'));
+			$this->_result->append($rate);
 			
-			if (null == $calcPrecoPrazo->nCdEmpresa) {
-				$cdServico = $this->getConfigData('cd_servico');
-				if (strpos($cdServico, ',')) {
-					$l = explode(',', $cdServico);
-					foreach ($l as $s) {
-						$calcPrecoPrazo->nCdServico = $s;
-						$calculaFreteResponse = $calcPrecoPrazoWS->CalcPrecoPrazo($calcPrecoPrazo);
-						$this->addCorreiosService($calculaFreteResponse->CalcPrecoPrazoResult->Servicos);
-					}
-				} else {
-					$calcPrecoPrazo->nCdServico = $cdServico;
-					$calculaFreteResponse = $calcPrecoPrazoWS->CalcPrecoPrazo($calcPrecoPrazo);
-					$this->addCorreiosService($calculaFreteResponse->CalcPrecoPrazoResult->Servicos);
-				}
-			} else {
-				$calcPrecoPrazo->nCdServico = $this->getConfigData('cd_servico');
-				$calculaFreteResponse = $calcPrecoPrazoWS->CalcPrecoPrazo($calcPrecoPrazo);
-				
-				$this->addCorreiosService($calculaFreteResponse->CalcPrecoPrazoResult->Servicos);
-			}
-		} catch (SoapFault $sf) {
-			$this->logger->critical($sf->getMessage());
+			return $this->_result;
 		}
-	}
-	
-	private function addCorreiosService($servico) {
-		if (is_array($servico->cServico)) {
-			foreach ($servico->cServico as $s) {
-				$this->correiosServiceList[] = $s;
+
+		$codigoServicos = $this->getConfigData('cd_servico');
+
+		/**
+		 * Prazo
+		 */
+		$prazoClient = $client->prazo();
+
+		if (strpos($codigoServicos, ',')) {
+			$l = explode(',', $codigoServicos);
+			foreach ($l as $servico) {
+				$prazoClient->withProduct($servico);
 			}
 		} else {
-			$this->correiosServiceList[] = $servico->cServico;
+			$prazoClient->withProduct($codigoServicos);
 		}
-	}
-	
-	private function checkReverse($code) {
-		if (isset($this->reverse[$code])) {
-			return $this->reverse[$code];
-		}
+		$prazos = $prazoClient->withCepOrigem($this->fromZip)->withCepDestino($this->toZip)->nacional();
+
 		
-		return $code;
+		/**
+		 * Preço
+		 */
+		$precoClient = $client->preco();
+		if (strpos($codigoServicos, ',')) {
+			$l = explode(',', $codigoServicos);
+			foreach ($l as $servico) {
+				$precoClient->withProduct($servico);
+			}
+		} else {
+			$precoClient->withProduct($codigoServicos);
+		}
+		$precoClient->withCepOrigem($this->fromZip)->withCepDestino($this->toZip);
+		$precoClient->withDiametro(0)->withAltura($this->nVlAltura)->withLargura($this->nVlLargura)->withComprimento($this->nVlComprimento);
+		
+		$nVlPeso = 0;
+		if ($this->volumeWeight > $this->getConfigData('volume_weight_min') && $this->volumeWeight > $this->packageWeight) {
+			$nVlPeso = $this->volumeWeight;
+		} else {
+			$nVlPeso = $this->packageWeight;
+		}
+		$precoClient->withPsObjeto($nVlPeso);
+
+		if ($this->getConfigData('vl_valor_declarado')) {
+			$precoClient->withVlDeclarado($this->packageValue);
+		}
+		$precoClient->withTpObjeto($this->getConfigData('cd_formato'));
+
+		$precos = $precoClient->nacional();
+
+		/**
+		 * Merge
+		 */
+		foreach($precos as $preco) {
+			$this->correiosServiceList[$preco->coProduto] = $preco; 
+		}
+
+		foreach($prazos as $prazo) {
+			$service = $this->correiosServiceList[$prazo->coProduto];
+			$service->prazoEntrega = $prazo->prazoEntrega;
+			$service->entregaDomiciliar = $prazo->entregaDomiciliar;
+			$service->entregaSabado = $prazo->entregaSabado;
+			$service->msgPrazo = $prazo->msgPrazo;
+
+			$this->correiosServiceList[$prazo->coProduto] = $service;
+		}
 	}
 	
 	public function isTrackingAvailable() {
-		$user = $this->getConfigData('sro_user');
-		$pwd = $this->getConfigData('sro_password');
-		
-		return (null != $user && null != $pwd);
+		return true;
 	}
 	
 	public function getTrackingInfo($tracking) {
@@ -456,47 +408,62 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	}
 	
 	private function searchCorreiosEvents($trackingNumber) {
-		$user = $this->getConfigData('sro_user');
-		$pwd = $this->getConfigData('sro_password');
-		if (empty($user) || empty($pwd)) {
+		/**
+		 * Autentica
+		 */
+		$client = new Client($this->getConfigData('usuario'), $this->getConfigData('codigo_acesso'));
+		try {
+			$client->autentica()->cartaoPostagem($this->getConfigData('cartao_postagem'));
+		} catch (UnauthorizedException $exception) {
+			$error = Mage::getModel('shipping/tracking_result_error');
+			$error->setTracking($trackingNumber);
+			$error->setCarrier($this->_code);
+			$error->setCarrierTitle($this->getConfigData('title'));
+
+			$error->setErrorMessage($exception->getMessage());
+
+			$this->_result->append($error);
+		}
+
+		try {
+			$client->autentica()->cartaoPostagem($this->getConfigData('cartao_postagem'));
+		} catch (UnauthorizedException $exception) {
+			$this->logger->critical($exception->getMessage());
+
 			$error = $this->trackErrorFactory->create();
 			$error->setTracking($trackingNumber);
 			$error->setCarrier($this->_code);
 			$error->setCarrierTitle($this->getConfigData('title'));
-			$error->setErrorMessage('É necessário informar o Usuário e senha do Sistema de Rastreamento de Objetos.');
+			$error->setErrorMessage(Errors::getMessage('401'));
 			
 			return $error;
 		}
 		
-		$buscaEventos = new BuscaEventos($user, $pwd, 'L', 'L', '101', $trackingNumber);
-		$rastroWs = new Rastro();
-		$buscaEventosResponse = $rastroWs->buscaEventos($buscaEventos);
+		$objetos = $client->rastro()->withCodigoObjeto($trackingNumber)->withResultado(Rastro::EVENTOS_TODOS)->objeto();
+		$objeto = $objetos->objetos[0];
 		
-		$objeto = $buscaEventosResponse->return->objeto;
-		$rate = null;
-		
-		if ($objeto == null || $objeto == '' || isset($objeto->erro)) {
+		if (isset($objeto->mensagem)) {
 			$error = $this->trackErrorFactory->create();
 			$error->setTracking($trackingNumber);
 			$error->setCarrier($this->_code);
 			$error->setCarrierTitle($this->getConfigData('title'));
-			$error->setErrorMessage($objeto->erro);
+			$error->setErrorMessage($objeto->mensagem);
 			
 			return $error;
 		} else {
-			$lastEvent = $objeto->evento[0];
-			$dataEntrega = str_replace('/', '-', $lastEvent->data);
+			$lastEvent = $objeto->eventos[0];
+			$endereco = $lastEvent->unidade->endereco;
 			
 			$track = array(
-				'deliverydate' => date('d-m-Y', strtotime($dataEntrega)),
-				'deliverytime' => date('H:i', strtotime($lastEvent->hora)),
-				'deliverylocation' => $lastEvent->cidade . '&nbsp;/&nbsp;' . $lastEvent->uf,
+				'deliverydate' => date('d-m-Y', strtotime($lastEvent->dtHrCriado)),
+				'deliverytime' => date('H:i', strtotime($lastEvent->dtHrCriado)),
+				'deliverylocation' => (isset($endereco->cidade) ? $endereco->cidade . '&nbsp;/&nbsp;' . $endereco->uf : ''),
 				'status' => htmlentities($lastEvent->descricao),
-				'progressdetail' => $this->eventsAsString($objeto),
+				'progressdetail' => $this->eventsAsString($objeto->eventos),
 			);
 			
 			$tracking = $this->trackStatusFactory->create();
-			$tracking->setTracking($trackingNumber);
+			$tracking->setTracking($objeto->codObjeto);
 			$tracking->setCarrier($this->_code);
 			$tracking->setCarrierTitle($this->getConfigData('title'));
 			$tracking->addData($track);
@@ -508,14 +475,13 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	private function eventsAsString($objeto) {
 		$detail = array();
 		foreach ($objeto->evento as $event) {
-			$dataEntrega = str_replace('/', '-', $event->data);
-			$destino = (isset($event->destino) ? $event->destino : null);
+			$endereco = $event->unidade->endereco;
 			
 			$detail[] = array(
-				'deliverydate' => date('d-m-Y', strtotime($dataEntrega)),
-				'deliverytime' => $event->hora,
-				'deliverylocation' => $event->cidade . '&nbsp;/&nbsp;' . $event->uf,
-				'activity' => $event->descricao . (!is_null($destino) ? sprintf(' (Unidade Operacional em %s / %s)', $destino->cidade, $destino->uf) : ''),
+				'deliverydate' => date('d-m-Y', strtotime($event->dtHrCriado)),
+				'deliverytime' => date('H:i', strtotime($event->dtHrCriado)),
+				'deliverylocation' => (isset($endereco->cidade) ? $endereco->cidade . '&nbsp;/&nbsp;' . $endereco->uf : ''),
+				'activity' => $event->descricao . (isset($endereco->cidade) ? sprintf(' (Unidade Operacional em %s / %s)', $endereco->cidade, $endereco->uf) : '')
 			);
 		}
 		
