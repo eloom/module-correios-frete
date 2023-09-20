@@ -26,12 +26,12 @@ use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Sales\Model\Order\Shipment;
-use Magento\Shipping\Model\Carrier\AbstractCarrier;
+use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory;
 use Psr\Log\LoggerInterface;
 
-class Carrier extends AbstractCarrier implements CarrierInterface {
+class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	
 	const CODE = 'eloom_correios';
 	const COUNTRY = 'BR';
@@ -46,18 +46,6 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	private $nVlComprimento = 0;
 	private $nVlAltura = 0;
 	private $nVlLargura = 0;
-	
-	private $rateErrorFactory;
-	
-	private $rateResultFactory;
-	
-	private $rateMethodFactory;
-	
-	private $trackFactory;
-	
-	private $trackErrorFactory;
-	
-	private $trackStatusFactory;
 	
 	private $packageValue;
 	
@@ -78,20 +66,39 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 	public function __construct(ScopeConfigInterface $scopeConfig,
 	                            ErrorFactory $rateErrorFactory,
 	                            LoggerInterface $logger,
-	                            ResultFactory $rateResultFactory,
-	                            MethodFactory $rateMethodFactory,
+	                            Security $xmlSecurity,
+								\Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
+								\Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
+								\Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+								\Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+								\Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
+								\Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
+								\Magento\Directory\Model\RegionFactory $regionFactory,
+								\Magento\Directory\Model\CountryFactory $countryFactory,
+								\Magento\Directory\Model\CurrencyFactory $currencyFactory,
+								\Magento\Directory\Helper\Data $directoryData,
+								\Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
 	                            array $data = [],
-	                            \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
 	                            \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
 	                            \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory) {
-		parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
 		
-		$this->rateErrorFactory = $rateErrorFactory;
-		$this->rateResultFactory = $rateResultFactory;
-		$this->rateMethodFactory = $rateMethodFactory;
-		$this->trackFactory = $trackFactory;
-		$this->trackErrorFactory = $trackErrorFactory;
-		$this->trackStatusFactory = $trackStatusFactory;
+		parent::__construct($scopeConfig,
+							$rateErrorFactory,
+							$logger,
+							$xmlSecurity,
+							$xmlElFactory,
+							$rateFactory,
+							$rateMethodFactory,
+							$trackFactory,
+							$trackErrorFactory,
+							$trackStatusFactory,
+							$regionFactory,
+							$countryFactory,
+							$currencyFactory,
+							$directoryData,
+							$stockRegistry,
+							$data);
+		
 		$this->logger = $logger;
 	}
 	
@@ -100,11 +107,11 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			return false;
 		}
 		
-		$this->_result = $this->rateResultFactory->create();
+		$this->_result = $this->_rateResultFactory->create();
 		$origCountry = $this->_scopeConfig->getValue(Shipment::XML_PATH_STORE_COUNTRY_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $request->getStoreId());
 		$destCountry = $request->getDestCountryId();
 		if ($origCountry != self::COUNTRY || $destCountry != self::COUNTRY) {
-			$rate = $this->rateErrorFactory->create();
+			$rate = $this->_rateErrorFactory->create();
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('002'));
@@ -116,7 +123,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		$this->fromZip = str_replace(array('-', '.'), '', trim($this->fromZip));
 		
 		if (!preg_match('/^([0-9]{8})$/', $this->fromZip)) {
-			$rate = $this->rateErrorFactory->create();
+			$rate = $this->_rateErrorFactory->create();
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('003'));
@@ -234,11 +241,11 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		$this->calcPrecoPrazo();
 		
 		if (sizeof($this->correiosServiceList) == 0) {
-			$rate = $this->rateErrorFactory->create();
-			$rate->setCarrier($this->_code);
-			$rate->setCarrierTitle($this->getConfigData('title'));
-			$rate->setErrorMessage(Errors::getMessage('001'));
-			$this->_result->append($rate);
+			$error = $this->_trackErrorFactory->create();
+			$error->setCarrier($this->_code);
+			$error->setCarrierTitle($this->getConfigData('title'));
+			$error->setErrorMessage(Errors::getMessage('001'));
+			$this->_result->append($error);
 			
 			return $this->_result;
 		}
@@ -258,13 +265,13 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 			if ($this->getConfigData('showmethod')) {
 				$title = $this->getCode('front', $method);
 				
-				$rate = $this->rateErrorFactory->create();
+				$rate = $this->_rateErrorFactory->create();
 				$rate->setCarrier($this->_code);
 				$rate->setCarrierTitle($this->getConfigData('title'));
 				$rate->setErrorMessage(($title != '' ? $title . ' - ' . $servico->txErro : $servico->txErro));
 			}
 		} else {
-			$rate = $this->rateMethodFactory->create();
+			$rate = $this->_rateMethodFactory->create();
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setMethod($method);
@@ -324,7 +331,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		} catch (UnauthorizedException $exception) {
 			$this->logger->critical($exception->getMessage());
 
-			$rate = $this->rateErrorFactory->create();
+			$rate = $this->_rateErrorFactory->create();
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('401'));
@@ -430,7 +437,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		} catch (UnauthorizedException $exception) {
 			$this->logger->critical($exception->getMessage());
 
-			$error = $this->trackErrorFactory->create();
+			$error = $this->_trackErrorFactory->create();
 			$error->setTracking($trackingNumber);
 			$error->setCarrier($this->_code);
 			$error->setCarrierTitle($this->getConfigData('title'));
@@ -443,7 +450,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 		$objeto = $objetos->objetos[0];
 		
 		if (isset($objeto->mensagem)) {
-			$error = $this->trackErrorFactory->create();
+			$error = $this->_trackErrorFactory->create();
 			$error->setTracking($trackingNumber);
 			$error->setCarrier($this->_code);
 			$error->setCarrierTitle($this->getConfigData('title'));
@@ -462,7 +469,7 @@ class Carrier extends AbstractCarrier implements CarrierInterface {
 				'progressdetail' => $this->eventsAsString($objeto->eventos),
 			);
 			
-			$tracking = $this->trackStatusFactory->create();
+			$tracking = $this->_trackStatusFactory->create();
 			$tracking->setTracking($objeto->codObjeto);
 			$tracking->setCarrier($this->_code);
 			$tracking->setCarrierTitle($this->getConfigData('title'));
