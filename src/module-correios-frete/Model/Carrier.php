@@ -66,7 +66,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	public function __construct(ScopeConfigInterface $scopeConfig,
 	                            ErrorFactory $rateErrorFactory,
 	                            LoggerInterface $logger,
-	                            Security $xmlSecurity,
+	                            \Magento\Framework\Xml\Security $xmlSecurity,
 								\Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
 								\Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
 								\Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
@@ -501,7 +501,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
      */
     protected function _doShipmentRequest(\Magento\Framework\DataObject $request) {
 		$result = new \Magento\Framework\DataObject();
-		
+
 		return $result;
 	}
 }
