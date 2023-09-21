@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace Eloom\CorreiosFrete\Model;
 
-use Eloom\Correios\Client;
-use Eloom\Correios\Errors;
-use Eloom\Correios\Endpoints\Rastro;
-use Eloom\Correios\Exceptions\UnauthorizedException;
+use Eloom\SdkCorreios\Client;
+use Eloom\SdkCorreios\Errors;
+use Eloom\SdkCorreios\Endpoints\Rastro;
+use Eloom\SdkCorreios\Exceptions\UnauthorizedException;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -38,7 +38,6 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	
 	protected $_code = self::CODE;
 	protected $_freeMethod = null;
-	protected $_result = null;
 	
 	private $fromZip = null;
 	private $toZip = null;
@@ -47,6 +46,13 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	private $nVlAltura = 0;
 	private $nVlLargura = 0;
 	
+	/**
+     * Rate result data
+     *
+     * @var Result|null
+     */
+    protected $_result = null;
+
 	private $packageValue;
 	
 	private $packageWeight;
@@ -96,8 +102,21 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 							$directoryData,
 							$stockRegistry,
 							$data);
-		
+							
 		$this->logger = $logger;
+	}
+
+	/**
+     * Processing additional validation to check if carrier applicable.
+     *
+     * @param \Magento\Framework\DataObject $request
+     * @return $this|bool|\Magento\Framework\DataObject
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @since 100.2.6
+     */
+    public function processAdditionalValidation(\Magento\Framework\DataObject $request) {
+		return $this;
 	}
 	
 	private function check(RateRequest $request) {
@@ -105,7 +124,6 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			return false;
 		}
 		
-		$this->_result = $this->_rateResultFactory->create();
 		$origCountry = $this->_scopeConfig->getValue(Shipment::XML_PATH_STORE_COUNTRY_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $request->getStoreId());
 		$destCountry = $request->getDestCountryId();
 		if ($origCountry != self::COUNTRY || $destCountry != self::COUNTRY) {
@@ -113,7 +131,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('002'));
-			$this->_result->append($rate);
+			$this->getRateResult()->append($rate);
 			
 			return false;
 		}
@@ -125,7 +143,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('003'));
-			$this->_result->append($rate);
+			$this->getRateResult()->append($rate);
 			
 			return false;
 		}
@@ -174,20 +192,20 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	public function collectRates(RateRequest $request) {
 		$this->toZip = $request->getDestPostcode();
 		if (null == $this->toZip) {
-			return $this->_result;
+			return $this->getRateResult();
 		}
 		$this->toZip = str_replace(array('-', '.'), '', trim($this->toZip));
 		$this->toZip = str_replace('-', '', $this->toZip);
 		if (!preg_match('/^([0-9]{8})$/', $this->toZip)) {
-			return $this->_result;
+			return $this->getRateResult();
 		}
 		
 		if ($this->check($request) === false) {
-			return $this->_result;
+			return $this->getRateResult();
 		}
 		$this->getQuotes();
 		
-		return $this->_result;
+		return $this->getRateResult();
 	}
 	
 	public function getAllowedMethods() {
@@ -243,23 +261,23 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$error->setCarrier($this->_code);
 			$error->setCarrierTitle($this->getConfigData('title'));
 			$error->setErrorMessage(Errors::getMessage('001'));
-			$this->_result->append($error);
+			$this->getRateResult()->append($error);
 			
-			return $this->_result;
+			return $this->getRateResult();
 		}
 		
 		foreach ($this->correiosServiceList as $s) {
 			$this->appendService($s);
 		}
 		
-		return $this->_result;
+		return $this->getRateResult();
 	}
 	
 	private function appendService($servico) {
 		$rate = null;
 		$method = $servico->coProduto;
 		
-		if ($servico->txErro != '0' && !in_array($servico->txErro, $this->skipErrors)) {
+		if (isset($servico->txErro) && !in_array($servico->txErro, $this->skipErrors)) {
 			if ($this->getConfigData('showmethod')) {
 				$title = $this->getCode('front', $method);
 				
@@ -279,10 +297,10 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 				$s = $this->getConfigData('mensagem_prazo_entrega');
 				$title = sprintf($s, $title, intval($servico->prazoEntrega + $this->getConfigData('prazo_extra')));
 			}
-			if ($servico->msgPrazo != '') {
+			if (isset($servico->msgPrazo)) {
 				$title = $title . ' [' . $servico->msgPrazo . ']';
 			}
-			$title = substr($title, 0, 255);
+			$title = substr($title, 0, 250);
 			$rate->setMethodTitle($title);
 			
 			$taxaExtra = $this->getConfigData('taxa_extra');
@@ -316,7 +334,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$rate->setCost(0);
 		}
 		
-		$this->_result->append($rate);
+		$this->getRateResult()->append($rate);
 	}
 	
 	private function calcPrecoPrazo() {
@@ -333,9 +351,9 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$rate->setCarrier($this->_code);
 			$rate->setCarrierTitle($this->getConfigData('title'));
 			$rate->setErrorMessage(Errors::getMessage('401'));
-			$this->_result->append($rate);
+			$this->getRateResult()->append($rate);
 			
-			return $this->_result;
+			return $this->getRateResult();
 		}
 
 		$codigoServicos = $this->getConfigData('cd_servico');
@@ -398,7 +416,9 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$service->prazoEntrega = $prazo->prazoEntrega;
 			$service->entregaDomiciliar = $prazo->entregaDomiciliar;
 			$service->entregaSabado = $prazo->entregaSabado;
-			$service->msgPrazo = $prazo->msgPrazo;
+			if(isset($prazo->msgPrazo)) {
+				$service->msgPrazo = $prazo->msgPrazo;
+			}
 
 			$this->correiosServiceList[$prazo->coProduto] = $service;
 		}
@@ -427,7 +447,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 
 			$error->setErrorMessage($exception->getMessage());
 
-			$this->_result->append($error);
+			$this->getTrackingResult()->append($error);
 		}
 
 		try {
@@ -504,4 +524,30 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 
 		return $result;
 	}
+
+	/**
+     * Get result of request
+     *
+     * @return Result|null
+     */
+    public function getTrackingResult() {
+        if (!$this->_result) {
+            $this->_result = $this->_trackFactory->create();
+        }
+
+        return $this->_result;
+    }
+
+	/**
+     * Get result of request
+     *
+     * @return Result|null
+     */
+    public function getRateResult() {
+        if (!$this->_result) {
+            $this->_result = $this->_rateFactory->create();
+        }
+
+        return $this->_result;
+    }
 }
