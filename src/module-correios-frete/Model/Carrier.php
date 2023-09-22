@@ -24,11 +24,9 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
-use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
-use Magento\Shipping\Model\Rate\ResultFactory;
 use Psr\Log\LoggerInterface;
 
 class Carrier extends AbstractCarrierOnline implements CarrierInterface {
@@ -136,8 +134,8 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			return false;
 		}
 		$this->fromZip = $this->_scopeConfig->getValue(Shipment::XML_PATH_STORE_ZIP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $request->getStoreId());
-		$this->fromZip = str_replace(array('-', '.'), '', trim($this->fromZip));
-		
+		$this->fromZip = preg_replace('/\D/', '', $this->fromZip);
+
 		if (!preg_match('/^([0-9]{8})$/', $this->fromZip)) {
 			$rate = $this->_rateErrorFactory->create();
 			$rate->setCarrier($this->_code);
@@ -194,8 +192,8 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		if (null == $this->toZip) {
 			return $this->getRateResult();
 		}
-		$this->toZip = str_replace(array('-', '.'), '', trim($this->toZip));
-		$this->toZip = str_replace('-', '', $this->toZip);
+
+		$this->toZip = preg_replace('/\D/', '', $this->toZip);
 		if (!preg_match('/^([0-9]{8})$/', $this->toZip)) {
 			return $this->getRateResult();
 		}
@@ -497,9 +495,9 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		}
 	}
 	
-	private function eventsAsString($objeto) {
+	private function eventsAsString($eventos) {
 		$detail = array();
-		foreach ($objeto->evento as $event) {
+		foreach ($eventos as $event) {
 			$endereco = $event->unidade->endereco;
 			
 			$detail[] = array(
