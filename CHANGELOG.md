@@ -1,5 +1,5 @@
 # 2.0.0
-## 20/09/2023
+## 21/09/2023
 
 1. [](#new)
    * Mudança da API SOAP para API Rest
