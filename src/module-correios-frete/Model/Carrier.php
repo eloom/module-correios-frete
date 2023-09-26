@@ -6,7 +6,7 @@
 * @category     elOOm
 * @package      Modulo Frete com Correios
 * @copyright    Copyright (c) 2023 elOOm (https://eloom.tech)
-* @version      2.0.0
+* @version      2.0.1
 * @license      https://opensource.org/licenses/OSL-3.0
 * @license      https://opensource.org/licenses/AFL-3.0
 *
@@ -219,21 +219,27 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	public function getCode($type, $code = null) {
 		static $codes = [
 			'service' => [
-				'03085' => '03085 - PAC com contrato',
-				'03298' => '03298 - PAC com contrato',
-				'04669' => '04669 - PAC com contrato',
 				'03050' => '03050 - SEDEX com contrato',
+				'03085' => '03085 - PAC com contrato',
+				'03140' => '03140 - SEDEX 12 com contrato',
+				'03158' => '03158 - SEDEX 10 com contrato',
 				'03220' => '03220 - SEDEX com contrato',
+				'03298' => '03298 - PAC com contrato',
 				'04162' => '04162 - SEDEX com contrato',
+				'04227' => '04227 - PAC Mini, com contrato',
+				'04669' => '04669 - PAC com contrato',
 				'40126' => '40126 - SEDEX a Cobrar, com contrato'
 			],
 			'front' => [
-				'03085' => 'PAC',
-				'03298' => 'PAC',
-				'04669' => 'PAC',
 				'03050' => 'SEDEX',
+				'03085' => 'PAC',
+				'03140' => 'SEDEX 12',
+				'03158' => 'SEDEX 10',
 				'03220' => 'SEDEX',
+				'03298' => 'PAC',
 				'04162' => 'SEDEX',
+				'04227' => 'PAC Mini',
+				'04669' => 'PAC',
 				'40126' => 'SEDEX a Cobrar'
 			]
 		];
