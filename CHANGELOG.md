@@ -1,3 +1,12 @@
+# 2.0.2
+## 16/10/2023
+
+1. [](#fix)
+   * https://github.com/eloom/module-correios-frete/issues/5
+
+2. [](#add)
+   * Mapeamento dos atributos Altura, Largura e Comprimento de forma dinâmica pelo Admin.
+
 # 2.0.1
 ## 21/09/2023
 

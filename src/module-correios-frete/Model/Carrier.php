@@ -6,7 +6,7 @@
 * @category     elOOm
 * @package      Modulo Frete com Correios
 * @copyright    Copyright (c) 2023 elOOm (https://eloom.tech)
-* @version      2.0.1
+* @version      2.0.2
 * @license      https://opensource.org/licenses/OSL-3.0
 * @license      https://opensource.org/licenses/AFL-3.0
 *
@@ -19,7 +19,7 @@ use Eloom\SdkCorreios\Client;
 use Eloom\SdkCorreios\Errors;
 use Eloom\SdkCorreios\Endpoints\Rastro;
 use Eloom\SdkCorreios\Exceptions\UnauthorizedException;
-
+use Eloom\SdkCorreios\Exceptions\CorreiosException;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -40,9 +40,9 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 	private $fromZip = null;
 	private $toZip = null;
 	private $hasFreeMethod = false;
-	private $nVlComprimento = 0;
-	private $nVlAltura = 0;
-	private $nVlLargura = 0;
+	private $totalLength = 0;
+	private $totalHeight = 0;
+	private $totalWidth = 0;
 	
 	/**
      * Rate result data
@@ -145,39 +145,67 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			
 			return false;
 		}
+		$weightAttr = $this->getConfigData('weight');
+		
+		$widthAttr = $this->getConfigData('width');
+		$heightAttr = $this->getConfigData('height');
+		$lengthAttr = $this->getConfigData('length');
+
+		$defaultHeight = $this->getConfigData('default_height');
+		$defaultWidth = $this->getConfigData('default_width');
+		$defaultLength = $this->getConfigData('default_length');
+
 		$price = 0;
 		$weight = 0;
-		if ($request->getPackageValue() > 0 && $request->getPackageWeight() > 0) {
-			$price = $request->getPackageValue();
-			$weight = $request->getPackageWeight();
-		} else if ($request->getAllItems()) {
+
+		$width = 0;
+		$height = 0;
+		$length = 0;
+
+		if ($request->getAllItems()) {
 			$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 			foreach ($request->getAllItems() as $item) {
 				if ($item->getProduct()->isVirtual()) {
 					continue;
 				}
 				
-				if ($item->getHasChildren() && $item->isShipSeparately()) {
+				if ($item->getHasChildren()) {
 					foreach ($item->getChildren() as $child) {
-						if ($child->getFreeShipping() && !$child->getProduct()->isVirtual()) {
-							$product = $objectManager->create(Product::class)->load($child->getProductId());
-							
-							$price += (float)(!is_null($product->getData('special_price')) ? $product->getData('special_price') : $product->getData('price'));
-							$weight += (float)$product->getData('weight');
+						if (!$child->getProduct()->isVirtual()) {
+							$product = $objectManager->create('Magento\Catalog\Model\Product')->load($child->getProductId());
+
+							$price += ($item->getPrice() - $item->getDiscountAmount());
+							$parentIds = $objectManager->create('Magento\GroupedProduct\Model\Product\Type\Grouped')->getParentIdsByChild($product->getId());
+							if (!$parentIds) {
+								$parentIds = $objectManager->create('Magento\ConfigurableProduct\Model\Product\Type\Configurable')->getParentIdsByChild($product->getId());
+
+								if ($parentIds) {
+									$parentProd = $objectManager->create('Magento\Catalog\Model\Product')->load($parentIds[0]);
+						
+									$weight += (float)$parentProd->getData($weightAttr);
+									$width += ($parentProd->getData($widthAttr) > 0 ? $parentProd->getData($widthAttr) : $defaultWidth);
+									$height += ($parentProd->getData($heightAttr) > 0 ? $parentProd->getData($heightAttr) : $defaultHeight);
+									$length += ($parentProd->getData($lengthAttr) > 0 ? $parentProd->getData($lengthAttr) : $defaultLength);
+								}
+							}
 						}
 					}
 				} else {
 					$product = $objectManager->create(Product::class)->load($item->getProductId());
 					if ($product->getTypeId() == 'simple') {
 						$price += (float)(!is_null($product->getData('special_price')) ? $product->getData('special_price') : $product->getData('price'));
-						$weight += (float)$product->getData('weight');
+						
+						$weight += (float)$product->getData($weightAttr);
+						$width += ($product->getData($widthAttr) > 0 ? $product->getData($widthAttr) : $defaultWidth);
+						$height += ($product->getData($heightAttr) > 0 ? $product->getData($heightAttr) : $defaultHeight);
+						$length += ($product->getData($lengthAttr) > 0 ? $product->getData($lengthAttr) : $defaultLength);
 					}
 				}
 			}
 		}
-		$this->nVlAltura = $this->getConfigData('default_height');
-		$this->nVlLargura = $this->getConfigData('default_width');
-		$this->nVlComprimento = $this->getConfigData('default_length');
+		$this->totalHeight = $height;
+		$this->totalWidth = $width;
+		$this->totalLength = $length;
 		
 		$this->hasFreeMethod = $request->getFreeShipping();
 		$this->_freeMethod = $this->getConfigData('servico_gratuito');
@@ -376,7 +404,6 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$prazoClient->withProduct($codigoServicos);
 		}
 		$prazos = $prazoClient->withCepOrigem($this->fromZip)->withCepDestino($this->toZip)->nacional();
-
 		
 		/**
 		 * Preço
@@ -391,7 +418,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 			$precoClient->withProduct($codigoServicos);
 		}
 		$precoClient->withCepOrigem($this->fromZip)->withCepDestino($this->toZip);
-		$precoClient->withDiametro(0)->withAltura($this->nVlAltura)->withLargura($this->nVlLargura)->withComprimento($this->nVlComprimento);
+		$precoClient->withDiametro(0)->withAltura($this->totalHeight)->withLargura($this->totalWidth)->withComprimento($this->totalLength);
 		
 		$nVlPeso = 0;
 		if ($this->volumeWeight > $this->getConfigData('volume_weight_min') && $this->volumeWeight > $this->packageWeight) {
@@ -406,7 +433,19 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		}
 		$precoClient->withTpObjeto($this->getConfigData('cd_formato'));
 
-		$precos = $precoClient->nacional();
+		try {
+			$precos = $precoClient->nacional();
+		} catch (CorreiosException $exception) {
+			$this->logger->critical($exception->getMessage());
+
+			$rate = $this->_rateErrorFactory->create();
+			$rate->setCarrier($this->_code);
+			$rate->setCarrierTitle($this->getConfigData('title'));
+			$rate->setErrorMessage($exception->getMessage());
+			$this->getRateResult()->append($rate);
+			
+			return $this->getRateResult();
+		}
 
 		/**
 		 * Merge

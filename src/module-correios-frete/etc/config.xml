@@ -15,14 +15,18 @@
 				<vl_valor_declarado>0</vl_valor_declarado>
 				<cd_mao_propria>0</cd_mao_propria>
 				<cd_aviso_recebimento>0</cd_aviso_recebimento>
+				<default_width>11</default_width>
 				<default_height>2</default_height>
 				<default_length>16</default_length>
-				<default_width>11</default_width>
 				<prazo_entrega>1</prazo_entrega>
 				<taxa_extra>0</taxa_extra>
 				<taxa_extra_valor>0</taxa_extra_valor>
 				<prazo_extra>0</prazo_extra>
 				<mensagem_prazo_entrega><![CDATA[%s - Até %d dia(s) úteis]]></mensagem_prazo_entrega>
+				<width>volume_largura</width>
+				<height>volume_altura</height>
+				<length>volume_comprimento</length>
+				<weight>weight</weight>
 				<volume_weight_min>5</volume_weight_min>
 				<sort_order>15</sort_order>
 			</eloom_correios>

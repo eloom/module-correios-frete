@@ -126,6 +126,23 @@
                     <validate>required-entry validate-digits</validate>
                 </field>
 
+                <field id="fields" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+					<label>Mapeamento de atributos</label>
+					<frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+				</field>
+				<field id="width" translate="label" type="select" sortOrder="71" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Largura</label>
+					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Attributes</source_model>
+				</field>
+				<field id="height" translate="label" type="select" sortOrder="72" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Altura</label>
+					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Attributes</source_model>
+				</field>
+				<field id="length" translate="label" type="select" sortOrder="73" showInDefault="1" showInWebsite="1" showInStore="1">
+					<label>Comprimento</label>
+					<source_model>Eloom\CorreiosFrete\Block\Adminhtml\Config\Source\Attributes</source_model>
+				</field>
+
                 <field id="showmethod" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Method if Not Applicable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
