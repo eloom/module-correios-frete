@@ -209,7 +209,7 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		
 		$this->hasFreeMethod = $request->getFreeShipping();
 		$this->_freeMethod = $this->getConfigData('servico_gratuito');
-		
+
 		$this->packageValue = $request->getBaseCurrency()->convert($price, $request->getPackageCurrency());
 		$this->packageWeight = number_format(floatval($weight), 2, '.', '');
 		$this->freeMethodWeight = number_format(floatval($request->getFreeMethodWeight()), 2, '.', '');
@@ -426,6 +426,11 @@ class Carrier extends AbstractCarrierOnline implements CarrierInterface {
 		} else {
 			$nVlPeso = $this->packageWeight;
 		}
+
+		if ($this->getConfigData('tp_vl_peso') == 'kg') {
+			$nVlPeso = $nVlPeso * 1000;
+		}
+
 		$precoClient->withPsObjeto($nVlPeso);
 
 		if ($this->getConfigData('vl_valor_declarado')) {
